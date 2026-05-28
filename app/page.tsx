@@ -1,65 +1,152 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+
+type FormData = {
+  firstName: string;
+  lastName: string;
+  company: string;
+  country: string;
+  arrivalDate: string;
+  departureDate: string;
+  accommodationNotes: string;
+};
 
 export default function Home() {
+  const [step, setStep] = useState(1);
+
+  const [formData, setFormData] = useState<FormData>({
+    firstName: "",
+    lastName: "",
+    company: "",
+    country: "",
+    arrivalDate: "",
+    departureDate: "",
+    accommodationNotes: "",
+  });
+
+  function updateField(field: keyof FormData, value: string) {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  }
+
+  function isStepOneValid() {
+    return (
+      formData.firstName &&
+      formData.lastName &&
+      formData.company &&
+      formData.country
+    );
+  }
+
+  function isStepTwoValid() {
+    return formData.arrivalDate && formData.departureDate;
+  }
+
+  function nextStep() {
+    if (step === 1 && !isStepOneValid()) return;
+    if (step === 2 && !isStepTwoValid()) return;
+
+    setStep((prev) => prev + 1);
+  }
+
+  function backStep() {
+    setStep((prev) => prev - 1);
+  }
+
+  async function submitForm() {
+    const res = await fetch("/api/visitors", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+    console.log(data);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <main>
+      <h1>Visitor Registration</h1>
+
+      <p>Step {step} of 3</p>
+
+      {step === 1 && (
+        <section>
+          <input
+            placeholder="First name"
+            value={formData.firstName}
+            onChange={(e) => updateField("firstName", e.target.value)}
+          />
+
+          <input
+            placeholder="Last name"
+            value={formData.lastName}
+            onChange={(e) => updateField("lastName", e.target.value)}
+          />
+
+          <input
+            placeholder="Company"
+            value={formData.company}
+            onChange={(e) => updateField("company", e.target.value)}
+          />
+
+          <input
+            placeholder="Country"
+            value={formData.country}
+            onChange={(e) => updateField("country", e.target.value)}
+          />
+
+          <button disabled={!isStepOneValid()} onClick={nextStep}>
+            Next
+          </button>
+        </section>
+      )}
+
+      {step === 2 && (
+        <section>
+          <input
+            type="date"
+            value={formData.arrivalDate}
+            onChange={(e) => updateField("arrivalDate", e.target.value)}
+          />
+
+          <input
+            type="date"
+            value={formData.departureDate}
+            onChange={(e) => updateField("departureDate", e.target.value)}
+          />
+
+          <textarea
+            placeholder="Accommodation notes"
+            value={formData.accommodationNotes}
+            onChange={(e) =>
+              updateField("accommodationNotes", e.target.value)
+            }
+          />
+
+          <button onClick={backStep}>Back</button>
+
+          <button disabled={!isStepTwoValid()} onClick={nextStep}>
+            Next
+          </button>
+        </section>
+      )}
+
+      {step === 3 && (
+        <section>
+          <h2>Review</h2>
+
+          <pre>{JSON.stringify(formData, null, 2)}</pre>
+
+          <button onClick={backStep}>Back</button>
+          <button onClick={submitForm}>Approve and submit</button>
+        </section>
+      )}
+    </main>
   );
 }
