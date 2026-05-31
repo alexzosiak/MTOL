@@ -7,7 +7,7 @@ export async function getAdminSession() {
     const adminId = cookieStore.get('admin_id');
 
     if (!adminId) {
-        redirect('/admin/login');
+        redirect('/login');
     }
 
     const adminResult = await db.query(
@@ -22,20 +22,18 @@ export async function getAdminSession() {
     const admin = adminResult.rows[0];
 
     if (!admin) {
-        redirect('/admin/login');
+        redirect('/login');
     }
 
     return admin;
 }
 
-export async function requireRole(
-  roles: string[]
-) {
-  const admin = await getAdminSession();
+export async function requireRole(roles: string[]) {
+    const admin = await getAdminSession();
 
-  if (!roles.includes(admin.role)) {
-    redirect("/admin/login");
-  }
+    if (!roles.includes(admin.role)) {
+        redirect('/login');
+    }
 
-  return admin;
+    return admin;
 }

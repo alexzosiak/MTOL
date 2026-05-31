@@ -1,5 +1,7 @@
 import { db } from '@/lib/database';
 import { requireRole } from '@/lib/auth';
+import Link from 'next/link';
+import styles from './page.module.css';
 
 type AdminPageProps = {
     searchParams: Promise<{
@@ -32,10 +34,18 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     const visitors = result.rows;
 
     return (
-        <main>
-            <h1>Admin Visitors</h1>
+        <main className={styles.page}>
+            <div className={styles.headingRow}>
+                <div>
+                    <p className={styles.eyebrow}>Directory</p>
+                    <h1>Admin Visitors</h1>
+                </div>
+                <Link className={styles.statisticsLink} href="/admin/statistics">
+                    View statistics
+                </Link>
+            </div>
 
-            <form>
+            <form className={styles.searchForm}>
                 <input
                     name="search"
                     placeholder="Search by full name"
@@ -45,32 +55,31 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 <button type="submit">Search</button>
             </form>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Full name</th>
-                        <th>Country</th>
-                        <th>Company</th>
-                        <th>Submitted at</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {visitors.map((visitor) => (
-                        <tr key={visitor.id}>
-                            <td>
-                                {visitor.first_name} {visitor.last_name}
-                            </td>
-                            <td>{visitor.country}</td>
-                            <td>{visitor.company}</td>
-                            <td>{String(visitor.created_at)}</td>
+            <div className={styles.tableWrap}>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Full name</th>
+                            <th>Country</th>
+                            <th>Company</th>
+                            <th>Submitted at</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
-            <form action="/api/admin/logout" method="POST">
-            <button type="submit">Logout</button>
-            </form>
+                    </thead>
+
+                    <tbody>
+                        {visitors.map((visitor) => (
+                            <tr key={visitor.id}>
+                                <td>
+                                    {visitor.first_name} {visitor.last_name}
+                                </td>
+                                <td>{visitor.country}</td>
+                                <td>{visitor.company}</td>
+                                <td>{String(visitor.created_at)}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         </main>
     );
 }

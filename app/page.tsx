@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./page.module.css";
 
 type FormData = {
   firstName: string;
@@ -70,83 +71,133 @@ export default function Home() {
   }
 
   return (
-    <main>
-      <h1>Visitor Registration</h1>
+    <main className={styles.page}>
+      <div className={styles.card}>
+        <p className={styles.eyebrow}>Guest services</p>
+        <div className={styles.headingRow}>
+          <div>
+            <h1 className={styles.title}>Visitor Registration</h1>
+            <p className={styles.subtitle}>
+              Complete the details below before your arrival.
+            </p>
+          </div>
+          <p className={styles.step}>Step {step} of 3</p>
+        </div>
 
-      <p>Step {step} of 3</p>
+        {step === 1 && (
+          <section className={styles.form}>
+            <label className={styles.field}>
+              <span>First name</span>
+              <input
+                placeholder="Enter your first name"
+                value={formData.firstName}
+                onChange={(e) => updateField("firstName", e.target.value)}
+              />
+            </label>
 
-      {step === 1 && (
-        <section>
-          <input
-            placeholder="First name"
-            value={formData.firstName}
-            onChange={(e) => updateField("firstName", e.target.value)}
-          />
+            <label className={styles.field}>
+              <span>Last name</span>
+              <input
+                placeholder="Enter your last name"
+                value={formData.lastName}
+                onChange={(e) => updateField("lastName", e.target.value)}
+              />
+            </label>
 
-          <input
-            placeholder="Last name"
-            value={formData.lastName}
-            onChange={(e) => updateField("lastName", e.target.value)}
-          />
+            <label className={styles.field}>
+              <span>Company</span>
+              <input
+                placeholder="Enter your company"
+                value={formData.company}
+                onChange={(e) => updateField("company", e.target.value)}
+              />
+            </label>
 
-          <input
-            placeholder="Company"
-            value={formData.company}
-            onChange={(e) => updateField("company", e.target.value)}
-          />
+            <label className={styles.field}>
+              <span>Country</span>
+              <input
+                placeholder="Enter your country"
+                value={formData.country}
+                onChange={(e) => updateField("country", e.target.value)}
+              />
+            </label>
 
-          <input
-            placeholder="Country"
-            value={formData.country}
-            onChange={(e) => updateField("country", e.target.value)}
-          />
+            <div className={styles.actions}>
+              <button
+                className={styles.primaryButton}
+                disabled={!isStepOneValid()}
+                onClick={nextStep}
+              >
+                Next
+              </button>
+            </div>
+          </section>
+        )}
 
-          <button disabled={!isStepOneValid()} onClick={nextStep}>
-            Next
-          </button>
-        </section>
-      )}
+        {step === 2 && (
+          <section className={styles.form}>
+            <label className={styles.field}>
+              <span>Arrival date</span>
+              <input
+                type="date"
+                value={formData.arrivalDate}
+                onChange={(e) => updateField("arrivalDate", e.target.value)}
+              />
+            </label>
 
-      {step === 2 && (
-        <section>
-          <input
-            type="date"
-            value={formData.arrivalDate}
-            onChange={(e) => updateField("arrivalDate", e.target.value)}
-          />
+            <label className={styles.field}>
+              <span>Departure date</span>
+              <input
+                type="date"
+                value={formData.departureDate}
+                onChange={(e) => updateField("departureDate", e.target.value)}
+              />
+            </label>
 
-          <input
-            type="date"
-            value={formData.departureDate}
-            onChange={(e) => updateField("departureDate", e.target.value)}
-          />
+            <label className={`${styles.field} ${styles.fullWidth}`}>
+              <span>Accommodation notes</span>
+              <textarea
+                placeholder="Add any useful notes"
+                value={formData.accommodationNotes}
+                onChange={(e) =>
+                  updateField("accommodationNotes", e.target.value)
+                }
+              />
+            </label>
 
-          <textarea
-            placeholder="Accommodation notes"
-            value={formData.accommodationNotes}
-            onChange={(e) =>
-              updateField("accommodationNotes", e.target.value)
-            }
-          />
+            <div className={styles.actions}>
+              <button className={styles.secondaryButton} onClick={backStep}>
+                Back
+              </button>
 
-          <button onClick={backStep}>Back</button>
+              <button
+                className={styles.primaryButton}
+                disabled={!isStepTwoValid()}
+                onClick={nextStep}
+              >
+                Next
+              </button>
+            </div>
+          </section>
+        )}
 
-          <button disabled={!isStepTwoValid()} onClick={nextStep}>
-            Next
-          </button>
-        </section>
-      )}
+        {step === 3 && (
+          <section className={styles.review}>
+            <h2>Review your details</h2>
 
-      {step === 3 && (
-        <section>
-          <h2>Review</h2>
+            <pre>{JSON.stringify(formData, null, 2)}</pre>
 
-          <pre>{JSON.stringify(formData, null, 2)}</pre>
-
-          <button onClick={backStep}>Back</button>
-          <button onClick={submitForm}>Approve and submit</button>
-        </section>
-      )}
+            <div className={styles.actions}>
+              <button className={styles.secondaryButton} onClick={backStep}>
+                Back
+              </button>
+              <button className={styles.primaryButton} onClick={submitForm}>
+                Approve and submit
+              </button>
+            </div>
+          </section>
+        )}
+      </div>
     </main>
   );
 }

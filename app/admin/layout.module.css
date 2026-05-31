@@ -1,0 +1,110 @@
+.layout {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: 250px minmax(0, 1fr);
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 30px 22px;
+  color: #dfe6ff;
+  background: #18223a;
+}
+
+.eyebrow {
+  margin: 0;
+  color: #91a8ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.sidebar h2 {
+  margin: 8px 0 4px;
+  color: white;
+  font-size: 24px;
+  letter-spacing: -0.04em;
+}
+
+.adminEmail {
+  overflow: hidden;
+  margin: 0;
+  color: #aeb9d7;
+  font-size: 13px;
+  text-overflow: ellipsis;
+}
+
+.nav {
+  display: grid;
+  gap: 7px;
+  margin-top: 36px;
+}
+
+.nav a {
+  border-radius: 9px;
+  padding: 11px 12px;
+  color: #dfe6ff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.nav a:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.logoutForm {
+  margin-top: auto;
+}
+
+.logoutForm button {
+  cursor: pointer;
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 9px;
+  padding: 11px 12px;
+  color: #e6ebff;
+  background: transparent;
+  font-weight: 700;
+}
+
+.logoutForm button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.content {
+  min-width: 0;
+  padding: 38px;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    padding: 20px;
+  }
+
+  .nav {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: 20px;
+  }
+
+  .nav a {
+    padding: 10px 8px;
+    text-align: center;
+  }
+
+  .logoutForm {
+    margin-top: 18px;
+  }
+
+  .content {
+    padding: 24px 18px;
+  }
+}
