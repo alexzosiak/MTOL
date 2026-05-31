@@ -1,5 +1,6 @@
 import { db } from "@/lib/database";
 import { requireRole } from "@/lib/auth";
+import { CountryWorldMap } from "@/components/CountryWorldMap";
 import styles from "./page.module.css";
 
 export default async function StatisticsPage() {
@@ -42,7 +43,7 @@ export default async function StatisticsPage() {
 
       <section className={styles.countryCard}>
         <h2>Visitors by country</h2>
-
+        <CountryWorldMap data={countryResult.rows} />
         <div className={styles.tableWrap}>
           <table>
             <thead>

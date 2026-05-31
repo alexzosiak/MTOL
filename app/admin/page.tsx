@@ -1,5 +1,6 @@
 import { db } from '@/lib/database';
 import { requireRole } from '@/lib/auth';
+import { DeleteVisitorButton } from '@/components/DeleteVisitorButton';
 import Link from 'next/link';
 import styles from './page.module.css';
 
@@ -10,7 +11,7 @@ type AdminPageProps = {
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-    await requireRole(["SUPER_ADMIN", "ADMIN"]);
+    await requireRole(['SUPER_ADMIN', 'ADMIN', 'VIEWER']);
 
     const params = await searchParams;
     const search = params.search || '';
@@ -40,7 +41,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <p className={styles.eyebrow}>Directory</p>
                     <h1>Admin Visitors</h1>
                 </div>
-                <Link className={styles.statisticsLink} href="/admin/statistics">
+                <Link
+                    className={styles.statisticsLink}
+                    href="/admin/statistics"
+                >
                     View statistics
                 </Link>
             </div>
@@ -63,6 +67,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             <th>Country</th>
                             <th>Company</th>
                             <th>Submitted at</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 
@@ -75,6 +80,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                 <td>{visitor.country}</td>
                                 <td>{visitor.company}</td>
                                 <td>{String(visitor.created_at)}</td>
+                                <td>
+                                    <Link
+                                        className={styles.editLink}
+                                        href={`/admin/visitors/${visitor.id}/edit`}
+                                    >
+                                        Edit
+                                    </Link>
+
+                                    <span className={styles.actionSeparator}>|</span>
+                                    <DeleteVisitorButton id={visitor.id} />
+                                </td>
                             </tr>
                         ))}
                     </tbody>

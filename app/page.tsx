@@ -1,203 +1,119 @@
-"use client";
-
-import { useState } from "react";
+import Link from "next/link";
 import styles from "./page.module.css";
 
-type FormData = {
-  firstName: string;
-  lastName: string;
-  company: string;
-  country: string;
-  arrivalDate: string;
-  departureDate: string;
-  accommodationNotes: string;
-};
-
-export default function Home() {
-  const [step, setStep] = useState(1);
-
-  const [formData, setFormData] = useState<FormData>({
-    firstName: "",
-    lastName: "",
-    company: "",
-    country: "",
-    arrivalDate: "",
-    departureDate: "",
-    accommodationNotes: "",
-  });
-
-  function updateField(field: keyof FormData, value: string) {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  }
-
-  function isStepOneValid() {
-    return (
-      formData.firstName &&
-      formData.lastName &&
-      formData.company &&
-      formData.country
-    );
-  }
-
-  function isStepTwoValid() {
-    return formData.arrivalDate && formData.departureDate;
-  }
-
-  function nextStep() {
-    if (step === 1 && !isStepOneValid()) return;
-    if (step === 2 && !isStepTwoValid()) return;
-
-    setStep((prev) => prev + 1);
-  }
-
-  function backStep() {
-    setStep((prev) => prev - 1);
-  }
-
-  async function submitForm() {
-    const res = await fetch("/api/visitors", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-    console.log(data);
-  }
-
+export default function HomePage() {
   return (
     <main className={styles.page}>
-      <div className={styles.card}>
-        <p className={styles.eyebrow}>Guest services</p>
-        <div className={styles.headingRow}>
-          <div>
-            <h1 className={styles.title}>Visitor Registration</h1>
-            <p className={styles.subtitle}>
-              Complete the details below before your arrival.
-            </p>
+      <section className={styles.hero}>
+        <div className={styles.grid} />
+        <nav className={styles.nav}>
+          <Link className={styles.brand} href="/">
+            <span className={styles.brandMark}>MT</span>
+            <span>
+              MILTECH
+              <small>LONDON / 2026</small>
+            </span>
+          </Link>
+
+          <div className={styles.navLinks}>
+            <a href="#mission">Mission</a>
+            <a href="#program">Program</a>
+            <Link className={styles.navButton} href="/register">
+              Register
+            </Link>
           </div>
-          <p className={styles.step}>Step {step} of 3</p>
+        </nav>
+
+        <div className={styles.heroContent}>
+          <p className={styles.systemLabel}>
+            <span className={styles.statusDot} />
+            Registration channel open
+          </p>
+
+          <h1>
+            Military Tech
+            <span>London 2026</span>
+          </h1>
+
+          <p className={styles.intro}>
+            A focused summit for defence technology leaders, event managers,
+            and international guests shaping the next generation of resilient
+            systems.
+          </p>
+
+          <div className={styles.actions}>
+            <Link className={styles.primaryButton} href="/register">
+              Register now
+              <span aria-hidden="true">+</span>
+            </Link>
+            <a className={styles.secondaryButton} href="#mission">
+              Explore briefing
+            </a>
+          </div>
         </div>
 
-        {step === 1 && (
-          <section className={styles.form}>
-            <label className={styles.field}>
-              <span>First name</span>
-              <input
-                placeholder="Enter your first name"
-                value={formData.firstName}
-                onChange={(e) => updateField("firstName", e.target.value)}
-              />
-            </label>
+        <div className={styles.eventBar}>
+          <div>
+            <span>Event date</span>
+            <strong>20 June 2026</strong>
+          </div>
+          <div>
+            <span>Location</span>
+            <strong>London, United Kingdom</strong>
+          </div>
+          <div>
+            <span>Sector focus</span>
+            <strong>Defence technology</strong>
+          </div>
+        </div>
 
-            <label className={styles.field}>
-              <span>Last name</span>
-              <input
-                placeholder="Enter your last name"
-                value={formData.lastName}
-                onChange={(e) => updateField("lastName", e.target.value)}
-              />
-            </label>
+        <p className={styles.coordinates}>51.5072 N / 0.1276 W</p>
+      </section>
 
-            <label className={styles.field}>
-              <span>Company</span>
-              <input
-                placeholder="Enter your company"
-                value={formData.company}
-                onChange={(e) => updateField("company", e.target.value)}
-              />
-            </label>
+      <section className={styles.mission} id="mission">
+        <div className={styles.sectionHeading}>
+          <p>01 / Mission profile</p>
+          <h2>Where modern defence systems meet real-world coordination.</h2>
+        </div>
 
-            <label className={styles.field}>
-              <span>Country</span>
-              <input
-                placeholder="Enter your country"
-                value={formData.country}
-                onChange={(e) => updateField("country", e.target.value)}
-              />
-            </label>
+        <div className={styles.missionGrid}>
+          <article className={styles.featureCard}>
+            <span>01</span>
+            <h3>Systems insight</h3>
+            <p>
+              Review emerging platforms, operational requirements, and the
+              technologies supporting resilient infrastructure.
+            </p>
+          </article>
+          <article className={styles.featureCard}>
+            <span>02</span>
+            <h3>Expert network</h3>
+            <p>
+              Connect with international teams working across defence,
+              engineering, logistics, and event operations.
+            </p>
+          </article>
+          <article className={styles.featureCard}>
+            <span>03</span>
+            <h3>Focused briefing</h3>
+            <p>
+              One day of precise conversations, practical demonstrations, and
+              structured professional exchange.
+            </p>
+          </article>
+        </div>
+      </section>
 
-            <div className={styles.actions}>
-              <button
-                className={styles.primaryButton}
-                disabled={!isStepOneValid()}
-                onClick={nextStep}
-              >
-                Next
-              </button>
-            </div>
-          </section>
-        )}
-
-        {step === 2 && (
-          <section className={styles.form}>
-            <label className={styles.field}>
-              <span>Arrival date</span>
-              <input
-                type="date"
-                value={formData.arrivalDate}
-                onChange={(e) => updateField("arrivalDate", e.target.value)}
-              />
-            </label>
-
-            <label className={styles.field}>
-              <span>Departure date</span>
-              <input
-                type="date"
-                value={formData.departureDate}
-                onChange={(e) => updateField("departureDate", e.target.value)}
-              />
-            </label>
-
-            <label className={`${styles.field} ${styles.fullWidth}`}>
-              <span>Accommodation notes</span>
-              <textarea
-                placeholder="Add any useful notes"
-                value={formData.accommodationNotes}
-                onChange={(e) =>
-                  updateField("accommodationNotes", e.target.value)
-                }
-              />
-            </label>
-
-            <div className={styles.actions}>
-              <button className={styles.secondaryButton} onClick={backStep}>
-                Back
-              </button>
-
-              <button
-                className={styles.primaryButton}
-                disabled={!isStepTwoValid()}
-                onClick={nextStep}
-              >
-                Next
-              </button>
-            </div>
-          </section>
-        )}
-
-        {step === 3 && (
-          <section className={styles.review}>
-            <h2>Review your details</h2>
-
-            <pre>{JSON.stringify(formData, null, 2)}</pre>
-
-            <div className={styles.actions}>
-              <button className={styles.secondaryButton} onClick={backStep}>
-                Back
-              </button>
-              <button className={styles.primaryButton} onClick={submitForm}>
-                Approve and submit
-              </button>
-            </div>
-          </section>
-        )}
-      </div>
+      <section className={styles.program} id="program">
+        <div>
+          <p className={styles.sectionCode}>02 / Operations window</p>
+          <h2>Secure your access for the London briefing.</h2>
+        </div>
+        <Link className={styles.programButton} href="/register">
+          Begin registration
+          <span aria-hidden="true">→</span>
+        </Link>
+      </section>
     </main>
   );
 }

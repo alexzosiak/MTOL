@@ -1,0 +1,42 @@
+.page h1,
+.eyebrow {
+  margin: 0;
+}
+
+.eyebrow {
+  margin-bottom: 7px;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.headingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.page h1 {
+  letter-spacing: -0.04em;
+}
+
+.backLink {
+  display: inline-block;
+  margin-top: 18px;
+  color: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.headingRow .backLink {
+  margin-top: 0;
+}
+
+.backLink:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
