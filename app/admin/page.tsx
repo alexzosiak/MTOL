@@ -11,7 +11,7 @@ type AdminPageProps = {
 };
 
 export default async function AdminPage({ searchParams }: AdminPageProps) {
-    await requireRole(['SUPER_ADMIN', 'ADMIN', 'VIEWER']);
+    const admin = await requireRole(['SUPER_ADMIN', 'ADMIN', 'VIEWER']);
 
     const params = await searchParams;
     const search = params.search || '';
@@ -67,7 +67,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             <th>Country</th>
                             <th>Company</th>
                             <th>Submitted at</th>
-                            <th>Actions</th>
+                            {admin.role !== 'VIEWER' && <th>Actions</th>}
                         </tr>
                     </thead>
 
@@ -80,17 +80,20 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                 <td>{visitor.country}</td>
                                 <td>{visitor.company}</td>
                                 <td>{String(visitor.created_at)}</td>
-                                <td>
-                                    <Link
-                                        className={styles.editLink}
-                                        href={`/admin/visitors/${visitor.id}/edit`}
-                                    >
-                                        Edit
-                                    </Link>
 
-                                    <span className={styles.actionSeparator}>|</span>
-                                    <DeleteVisitorButton id={visitor.id} />
-                                </td>
+                                {admin.role !== 'VIEWER' && (
+                                    <td>
+                                        <a
+                                            href={`/admin/visitors/${visitor.id}/edit`}
+                                        >
+                                            Edit
+                                        </a>
+
+                                        {' | '}
+
+                                        <DeleteVisitorButton id={visitor.id} />
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
