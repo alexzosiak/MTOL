@@ -1,36 +1,234 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Military Tech London Event App
 
-## Getting Started
+Fullstack event registration platform built with Next.js, PostgreSQL, Docker and TypeScript.
 
-First, run the development server:
+## Features
+
+### Public Area
+
+* Event landing page
+* Multi-step registration form
+* Visitor registration
+* Validation
+
+### Admin Panel
+
+* Admin authentication
+* Cookie-based session
+* Role Based Access Control (RBAC)
+
+Roles:
+
+* SUPER_ADMIN
+* ADMIN
+* VIEWER
+
+### Visitors Management
+
+* Create visitor
+* View visitors
+* Search visitors
+* Edit visitor
+* Delete visitor
+
+### Admin Users Management
+
+* Create admin user
+* View admin users
+* Change role
+* Delete admin user
+
+### Statistics
+
+* Total visitors
+* Visitors registered in the last 24 hours
+* Visitors by country
+* World map visualization
+
+---
+
+# Tech Stack
+
+* Next.js App Router
+* TypeScript
+* PostgreSQL
+* Docker
+* CSS Modules
+* bcryptjs
+* react-svg-worldmap
+
+---
+
+# Installation
+
+## 1. Clone repository
+
+```bash
+git clone <repository-url>
+cd <project-folder>
+```
+
+## 2. Install dependencies
+
+```bash
+npm install
+```
+
+## 3. Create environment file
+
+Create `.env` file from `.env.example`
+
+Example:
+
+```env
+DATABASE_URL=postgresql://postgres:admin@localhost:5436/military_tech
+```
+
+---
+
+# Database Setup
+
+## Start PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+Verify container is running:
+
+```bash
+docker ps
+```
+
+---
+
+## Run database migrations
+
+```bash
+docker exec -i military_tech_database psql -U postgres -d military_tech < database/migrations/001_init.sql
+```
+
+---
+
+## Seed initial admin user
+
+```bash
+docker exec -i military_tech_database psql -U postgres -d military_tech < database/seeds/001_super_admin.sql
+```
+
+---
+
+# Start Application
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Application:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```txt
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Admin Login:
 
-## Learn More
+```txt
+http://localhost:3000/login
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Default Super Admin
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Email:
 
-## Deploy on Vercel
+```txt
+admin@example.com
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Password:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```txt
+admin123
+```
+
+---
+
+# Project Structure
+
+```txt
+app/
+├── admin/
+├── api/
+├── login/
+├── register/
+
+components/
+
+lib/
+
+database/
+├── migrations/
+└── seeds/
+
+docker-compose.yml
+```
+
+---
+
+# Roles
+
+## SUPER_ADMIN
+
+Can:
+
+* Manage admin users
+* Manage visitors
+* View statistics
+
+## ADMIN
+
+Can:
+
+* Manage visitors
+* View statistics
+
+## VIEWER
+
+Can:
+
+* View visitors
+* View statistics
+
+---
+
+# Notes
+
+* Database schema is created through SQL migrations.
+* Initial data is created through SQL seed files.
+* Authentication is cookie-based.
+* Authorization is implemented using role-based access control.
+* Passwords are stored as bcrypt hashes.
+
+---
+
+# Development
+
+Run development server:
+
+```bash
+npm run dev
+```
+
+Build project:
+
+```bash
+npm run build
+```
+
+Run production build:
+
+```bash
+npm start
+```
+
