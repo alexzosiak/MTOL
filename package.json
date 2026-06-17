@@ -6,12 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:migrate": "node database/scripts/migrate.mjs",
+    "db:seed": "node database/scripts/seed.mjs",
+    "db:setup": "npm run db:migrate && npm run db:seed"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
     "next": "16.2.6",
     "pg": "^8.21.0",
+    "postgrator": "^8.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-svg-worldmap": "^2.0.2"
