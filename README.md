@@ -82,6 +82,8 @@ Example:
 
 ```env
 DATABASE_URL=postgresql://postgres:admin@localhost:5436/military_tech
+DEFAULT_ADMIN_EMAIL=admin@example.com
+DEFAULT_ADMIN_PASSWORD=admin123
 ```
 
 ---
@@ -102,19 +104,21 @@ docker ps
 
 ---
 
-## Run database migrations
+## Run database migrations and seed
 
 ```bash
-docker exec -i military_tech_database psql -U postgres -d military_tech < database/migrations/001_init.sql
+npm run db:setup
 ```
 
----
-
-## Seed initial admin user
+This command runs:
 
 ```bash
-docker exec -i military_tech_database psql -U postgres -d military_tech < database/seeds/001_super_admin.sql
+npm run db:migrate
+npm run db:seed
 ```
+
+The seed script creates the initial super admin from `DEFAULT_ADMIN_EMAIL` and `DEFAULT_ADMIN_PASSWORD`.
+The password is hashed with bcrypt before it is stored in the database.
 
 ---
 
@@ -169,7 +173,7 @@ lib/
 
 database/
 ├── migrations/
-└── seeds/
+└── scripts/
 
 docker-compose.yml
 ```
@@ -205,7 +209,7 @@ Can:
 # Notes
 
 * Database schema is created through SQL migrations.
-* Initial data is created through SQL seed files.
+* Initial admin data is created through `database/scripts/seed.mjs`.
 * Authentication is cookie-based.
 * Authorization is implemented using role-based access control.
 * Passwords are stored as bcrypt hashes.
@@ -231,4 +235,3 @@ Run production build:
 ```bash
 npm start
 ```
-
