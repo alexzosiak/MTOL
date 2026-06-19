@@ -1,49 +1,96 @@
 # Military Tech London Event App
 
-Fullstack event registration platform built with Next.js, PostgreSQL, Docker and TypeScript.
+A full-stack event registration and visitor management platform built with Next.js, TypeScript, PostgreSQL, and Docker.
 
-## Features
+---
 
-### Public Area
+# Features
+
+## Public Area
 
 * Event landing page
 * Multi-step registration form
 * Visitor registration
-* Validation
+* Country autocomplete selection
+* Email validation
+* Duplicate email protection
+* Server-side validation
 
-### Admin Panel
+## Admin Panel
 
-* Admin authentication
-* Cookie-based session
+* Secure admin authentication
+* Cookie-based session management
 * Role Based Access Control (RBAC)
 
-Roles:
+### Roles
 
 * SUPER_ADMIN
 * ADMIN
 * VIEWER
 
-### Visitors Management
+---
 
-* Create visitor
+## Visitors Management
+
+* Create visitor registrations
 * View visitors
 * Search visitors
-* Edit visitor
-* Delete visitor
+* Country information
+* Visitor email management
 
-### Admin Users Management
+---
 
-* Create admin user
+## Admin Users Management
+
+* Create admin users
 * View admin users
-* Change role
-* Delete admin user
+* Change user roles
+* Delete admin users
+* Duplicate email protection
 
-### Statistics
+---
+
+## Statistics Dashboard
 
 * Total visitors
 * Visitors registered in the last 24 hours
-* Visitors by country
+* Visitors grouped by country
 * World map visualization
+* Registration analytics
+
+---
+
+# Architecture
+
+The project follows a layered architecture:
+
+Route Handlers → Services → Repositories → PostgreSQL
+
+### Responsibilities
+
+#### Route Handlers
+
+Responsible for:
+
+* HTTP requests and responses
+* Status codes
+* Error handling
+
+#### Services
+
+Responsible for:
+
+* Business logic
+* Validation
+* Authorization rules
+
+#### Repositories
+
+Responsible for:
+
+* Database access
+* SQL queries
+* Data persistence
 
 ---
 
@@ -53,35 +100,38 @@ Roles:
 * TypeScript
 * PostgreSQL
 * Docker
-* CSS Modules
 * bcryptjs
 * react-svg-worldmap
+* world-countries
 
 ---
 
 # Installation
 
-## 1. Clone repository
+## Clone Repository
 
 ```bash
 git clone <repository-url>
 cd <project-folder>
 ```
 
-## 2. Install dependencies
+## Install Dependencies
 
 ```bash
 npm install
 ```
 
-## 3. Create environment file
+---
 
-Create `.env` file from `.env.example`
+# Environment Variables
+
+Create a `.env` file based on `.env.example`.
 
 Example:
 
 ```env
 DATABASE_URL=postgresql://postgres:admin@localhost:5436/military_tech
+
 DEFAULT_ADMIN_EMAIL=admin@example.com
 DEFAULT_ADMIN_PASSWORD=admin123
 ```
@@ -96,7 +146,7 @@ DEFAULT_ADMIN_PASSWORD=admin123
 docker compose up -d
 ```
 
-Verify container is running:
+Verify container status:
 
 ```bash
 docker ps
@@ -104,31 +154,34 @@ docker ps
 
 ---
 
-## Run database migrations and seed
+## Run Migrations and Seed
 
 ```bash
 npm run db:setup
 ```
 
-This command runs:
+This command executes:
 
 ```bash
 npm run db:migrate
 npm run db:seed
 ```
 
-The seed script creates the initial super admin from `DEFAULT_ADMIN_EMAIL` and `DEFAULT_ADMIN_PASSWORD`.
-The password is hashed with bcrypt before it is stored in the database.
+The seed script creates the initial SUPER_ADMIN account using the environment variables.
+
+Passwords are hashed using bcrypt before being stored in the database.
 
 ---
 
-# Start Application
+# Run Application
+
+Development mode:
 
 ```bash
 npm run dev
 ```
 
-Application:
+Application URL:
 
 ```txt
 http://localhost:3000
@@ -165,11 +218,21 @@ app/
 ├── admin/
 ├── api/
 ├── login/
-├── register/
 
 components/
 
+repositories/
+├── admin.repository.ts
+├── visitor.repository.ts
+
+services/
+├── admin.service.ts
+├── visitor.service.ts
+
 lib/
+
+data/
+├── countries.ts
 
 database/
 ├── migrations/
@@ -206,13 +269,14 @@ Can:
 
 ---
 
-# Notes
+# Security
 
-* Database schema is created through SQL migrations.
-* Initial admin data is created through `database/scripts/seed.mjs`.
-* Authentication is cookie-based.
-* Authorization is implemented using role-based access control.
-* Passwords are stored as bcrypt hashes.
+* Password hashing with bcrypt
+* Cookie-based authentication
+* Role-based authorization
+* Email uniqueness validation
+* Server-side input validation
+* Protection against duplicate registrations
 
 ---
 
@@ -224,7 +288,7 @@ Run development server:
 npm run dev
 ```
 
-Build project:
+Build application:
 
 ```bash
 npm run build
