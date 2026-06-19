@@ -2,61 +2,71 @@ import bcrypt from 'bcryptjs';
 import { adminRepository } from '@/repositories/admin.repository';
 
 type CreateAdminInput = {
-  email?: string;
-  password?: string;
-  role?: string;
+    email: string;
+    password: string;
+    role: string;
 };
 
 const allowedRoles = ['ADMIN', 'VIEWER'];
 
 export const adminService = {
-  async createAdmin(data: CreateAdminInput) {
-    if (!data.email || !data.password || !data.role) {
-      throw new Error('Email, password and role are required');
-    }
+    
 
-    if (!allowedRoles.includes(data.role)) {
-      throw new Error('Invalid role');
-    }
+    async createAdmin(data: CreateAdminInput) {
 
-    const passwordHash = await bcrypt.hash(data.password, 10);
+        const email = data.email?.trim().toLowerCase();
+        const existingAdmin = await adminRepository.findByEmail(email);
 
-    return adminRepository.create({
-      email: data.email,
-      passwordHash,
-      role: data.role,
-    });
-  },
+        if (existingAdmin) {
+            throw new Error("Admin with this email already exists");
+        }
 
-  async deleteAdmin(id: string, currentAdminId: string) {
-    if (currentAdminId === id) {
-      throw new Error('You cannot delete yourself');
-    }
+        if (!data.email || !data.password || !data.role) {
+            throw new Error('Email, password and role are required');
+        }
 
-    const deletedAdmin = await adminRepository.deleteById(id);
+        if (!allowedRoles.includes(data.role)) {
+            throw new Error('Invalid role');
+        }
 
-    if (!deletedAdmin) {
-      throw new Error('Admin user not found');
-    }
+        const passwordHash = await bcrypt.hash(data.password, 10);
 
-    return deletedAdmin;
-  },
+        return adminRepository.create({
+            email: email,
+            passwordHash,
+            role: data.role,
+        });
+    },
 
-  async updateAdminRole(id: string, role: string, currentAdminId: string) {
-    if (currentAdminId === id) {
-      throw new Error('You cannot change your own role');
-    }
+    async deleteAdmin(id: string, currentAdminId: string) {
+        if (currentAdminId === id) {
+            throw new Error('You cannot delete yourself');
+        }
 
-    if (!allowedRoles.includes(role)) {
-      throw new Error('Invalid role');
-    }
+        const deletedAdmin = await adminRepository.deleteById(id);
 
-    const updatedAdmin = await adminRepository.updateRole(id, role);
+        if (!deletedAdmin) {
+            throw new Error('Admin user not found');
+        }
 
-    if (!updatedAdmin) {
-      throw new Error('Admin user not found');
-    }
+        return deletedAdmin;
+    },
 
-    return updatedAdmin;
-  },
+    async updateAdminRole(id: string, role: string, currentAdminId: string) {
+        if (currentAdminId === id) {
+            throw new Error('You cannot change your own role');
+        }
+
+        if (!allowedRoles.includes(role)) {
+            throw new Error('Invalid role');
+        }
+
+        const updatedAdmin = await adminRepository.updateRole(id, role);
+
+        if (!updatedAdmin) {
+            throw new Error('Admin user not found');
+        }
+
+        return updatedAdmin;
+    },
 };

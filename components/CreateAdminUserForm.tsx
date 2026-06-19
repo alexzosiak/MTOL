@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ErrorMessage } from './ErrorMessage';
 
 const fieldClass = 'grid gap-[7px] text-[13px] font-bold text-[#34405a]';
 const controlClass =
@@ -10,6 +11,7 @@ export function CreateAdminUserForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('admin123');
     const [role, setRole] = useState('VIEWER');
+    const [error, setError] = useState('');
 
     async function handleSubmit() {
         const res = await fetch('/api/admin/users', {
@@ -23,9 +25,11 @@ export function CreateAdminUserForm() {
         const data = await res.json();
         console.log(data);
 
-        if (res.ok) {
-            window.location.reload();
+        if (!res.ok) {
+            setError(data.error || 'Something went wrong');
+            return;
         }
+        window.location.reload();
     }
 
     return (
@@ -36,6 +40,9 @@ export function CreateAdminUserForm() {
             <p className="mt-1.5 mb-0 text-sm leading-[1.5] text-[var(--muted)]">
                 Add a new administrator and choose their initial access level.
             </p>
+            {error && (
+                ErrorMessage({ message: error })
+            )}
 
             <div className="mt-[18px] grid grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(130px,0.6fr)_auto] items-end gap-3 max-[900px]:grid-cols-2 max-[560px]:grid-cols-1">
                 <label className={fieldClass}>

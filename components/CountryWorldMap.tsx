@@ -1,20 +1,13 @@
 "use client";
 
-import WorldMap, { type ISOCode } from "react-svg-worldmap";
+import dynamic from "next/dynamic";
+import { countryCodes } from '@/data/countries';
+
+const WorldMap = dynamic(() => import("react-svg-worldmap"), { ssr: false });
 
 type CountryData = {
   country: string;
   count: number;
-};
-
-const countryCodes: Record<string, ISOCode> = {
-  Ukraine: "ua",
-  Ireland: "ie",
-  Germany: "de",
-  France: "fr",
-  Poland: "pl",
-  "United Kingdom": "gb",
-  USA: "us",
 };
 
 export function CountryWorldMap({ data }: { data: CountryData[] }) {
