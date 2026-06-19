@@ -9,8 +9,11 @@ const homeLinkClass =
 export default function AdminLoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    
+    async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
 
-    async function handleLogin() {
         const res = await fetch('/api/admin/login', {
             method: 'POST',
             headers: {
@@ -23,9 +26,13 @@ export default function AdminLoginPage() {
 
         console.log(data);
 
+        if (!res.ok) {
+            setError('Invalid email or password');
+            return;
+        }
         if (res.ok) {
             window.location.href = '/admin';
-        }
+        } 
     }
 
     return (
@@ -35,7 +42,8 @@ export default function AdminLoginPage() {
                 Back to home
             </Link>
 
-            <section className="grid w-[min(100%,420px)] gap-[18px] rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[34px] shadow-[var(--shadow)]">
+            <form onSubmit={handleLogin}
+            className="grid w-[min(100%,420px)] gap-[18px] rounded-[20px] border border-[var(--border)] bg-[var(--surface)] p-[34px] shadow-[var(--shadow)]">
                 <p className="m-0 text-xs font-bold uppercase tracking-[0.12em] text-[var(--primary)]">
                     Visitor management
                 </p>
@@ -66,14 +74,18 @@ export default function AdminLoginPage() {
                         type="password"
                     />
                 </label>
-
+                {error && (
+                    <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+                        {error}
+                    </div>
+                )}
                 <button
                     className="cursor-pointer rounded-[10px] border-0 bg-[var(--primary)] px-[18px] py-[13px] font-bold text-white transition-[background,transform] duration-[160ms] hover:-translate-y-px hover:bg-[var(--primary-dark)]"
-                    onClick={handleLogin}
+                    type="submit"
                 >
                     Login
                 </button>
-            </section>
+            </form>
         </main>
     );
 }
