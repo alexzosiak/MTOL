@@ -3,7 +3,11 @@ import { requireRole } from '@/lib/auth';
 import { CreateAdminUserForm } from '@/components/CreateAdminUserForm';
 import { DeleteAdminUserButton } from '@/components/DeleteAdminUserButton';
 import { ChangeAdminRoleSelect } from '@/components/ChangeAdminRoleSelect';
-import styles from './page.module.css';
+
+const tableCellClass =
+    'whitespace-nowrap border-b border-[var(--border)] px-4 py-[15px] text-sm';
+const tableHeadClass =
+    'whitespace-nowrap border-b border-[var(--border)] bg-[#f9fbfe] px-4 py-[15px] text-left text-xs uppercase tracking-[0.07em] text-[var(--muted)]';
 
 export default async function AdminUsersPage() {
     await requireRole(['SUPER_ADMIN']);
@@ -17,35 +21,42 @@ export default async function AdminUsersPage() {
     const admins = result.rows;
 
     return (
-        <main className={styles.page}>
-            <p className={styles.eyebrow}>Access control</p>
-            <h1>Admin Users</h1>
+        <main>
+            <p className="mb-[7px] mt-0 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">
+                Access control
+            </p>
+            <h1 className="m-0 tracking-[-0.04em]">Admin Users</h1>
 
-            <div className={styles.tableWrap}>
-                <table>
+            <div className="mt-7 overflow-x-auto rounded-[13px] border border-[var(--border)] bg-[var(--surface)]">
+                <table className="w-full border-collapse text-left">
                     <thead>
                         <tr>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Actions</th>
-                            <th>Change Role</th>
-                            <th>Created at</th>
+                            <th className={tableHeadClass}>Email</th>
+                            <th className={tableHeadClass}>Role</th>
+                            <th className={tableHeadClass}>Actions</th>
+                            <th className={tableHeadClass}>Change Role</th>
+                            <th className={tableHeadClass}>Created at</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {admins.map((admin) => (
-                            <tr key={admin.id}>
-                                <td>{admin.email}</td>
-                                <td>
-                                    <span className={styles.role}>
+                            <tr
+                                className="[&:last-child>td]:border-b-0"
+                                key={admin.id}
+                            >
+                                <td className={tableCellClass}>
+                                    {admin.email}
+                                </td>
+                                <td className={tableCellClass}>
+                                    <span className="inline-block rounded-full bg-[#edf1ff] px-2 py-[5px] text-[11px] font-bold text-[var(--primary)]">
                                         {admin.role}
                                     </span>
                                 </td>
-                                <td>
+                                <td className={tableCellClass}>
                                     <DeleteAdminUserButton id={admin.id} />
                                 </td>
-                                <td>
+                                <td className={tableCellClass}>
                                     {admin.role === 'SUPER_ADMIN' ? (
                                         'SUPER_ADMIN'
                                     ) : (
@@ -55,7 +66,9 @@ export default async function AdminUsersPage() {
                                         />
                                     )}
                                 </td>
-                                <td>{String(admin.created_at)}</td>
+                                <td className={tableCellClass}>
+                                    {String(admin.created_at)}
+                                </td>
                             </tr>
                         ))}
                     </tbody>

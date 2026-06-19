@@ -1,7 +1,11 @@
 import { db } from "@/lib/database";
 import { requireRole } from "@/lib/auth";
 import { CountryWorldMap } from "@/components/CountryWorldMap";
-import styles from "./page.module.css";
+
+const tableCellClass =
+  "border-t border-[var(--border)] px-[18px] py-3.5 text-sm";
+const tableHeadClass =
+  "border-t border-[var(--border)] bg-[#f9fbfe] px-[18px] py-3.5 text-left text-xs uppercase tracking-[0.07em] text-[var(--muted)]";
 
 export default async function StatisticsPage() {
   await requireRole(["SUPER_ADMIN", "ADMIN", "VIEWER"]);
@@ -25,39 +29,49 @@ export default async function StatisticsPage() {
   `);
 
   return (
-    <main className={styles.page}>
-      <p className={styles.eyebrow}>Overview</p>
-      <h1>Statistics</h1>
+    <main>
+      <p className="mb-[7px] mt-0 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">
+        Overview
+      </p>
+      <h1 className="m-0 tracking-[-0.04em]">Statistics</h1>
 
-      <div className={styles.metrics}>
-        <section className={styles.metricCard}>
-          <h2>Total visitors</h2>
-          <p>{totalResult.rows[0].total}</p>
+      <div className="my-7 mb-5 grid grid-cols-2 gap-4 max-[540px]:grid-cols-1">
+        <section className="rounded-[13px] border border-[var(--border)] bg-[var(--surface)] p-5">
+          <h2 className="m-0 text-sm text-[var(--muted)]">Total visitors</h2>
+          <p className="mt-3 mb-0 text-4xl font-bold tracking-[-0.06em] text-[var(--primary)]">
+            {totalResult.rows[0].total}
+          </p>
         </section>
 
-        <section className={styles.metricCard}>
-          <h2>Visitors last 24h</h2>
-          <p>{todayResult.rows[0].today}</p>
+        <section className="rounded-[13px] border border-[var(--border)] bg-[var(--surface)] p-5">
+          <h2 className="m-0 text-sm text-[var(--muted)]">
+            Visitors last 24h
+          </h2>
+          <p className="mt-3 mb-0 text-4xl font-bold tracking-[-0.06em] text-[var(--primary)]">
+            {todayResult.rows[0].today}
+          </p>
         </section>
       </div>
 
-      <section className={styles.countryCard}>
-        <h2>Visitors by country</h2>
+      <section className="rounded-[13px] border border-[var(--border)] bg-[var(--surface)]">
+        <h2 className="m-0 px-[18px] pt-[18px] text-sm text-[var(--muted)]">
+          Visitors by country
+        </h2>
         <CountryWorldMap data={countryResult.rows} />
-        <div className={styles.tableWrap}>
-          <table>
+        <div className="mt-3 overflow-x-auto">
+          <table className="w-full border-collapse text-left">
             <thead>
               <tr>
-                <th>Country</th>
-                <th>Visitors</th>
+                <th className={tableHeadClass}>Country</th>
+                <th className={tableHeadClass}>Visitors</th>
               </tr>
             </thead>
 
             <tbody>
               {countryResult.rows.map((row) => (
                 <tr key={row.country}>
-                  <td>{row.country}</td>
-                  <td>{row.count}</td>
+                  <td className={tableCellClass}>{row.country}</td>
+                  <td className={tableCellClass}>{row.count}</td>
                 </tr>
               ))}
             </tbody>

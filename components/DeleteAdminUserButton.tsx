@@ -1,7 +1,5 @@
 "use client";
 
-import styles from "./DeleteAdminUserButton.module.css";
-
 export function DeleteAdminUserButton({
   id,
 }: {
@@ -30,7 +28,10 @@ if (!confirmed) {
   }
 
   return (
-    <button className={styles.button} onClick={handleDelete}>
+    <button
+      className="cursor-pointer rounded-lg border border-[#f0c9ce] bg-[#fff8f8] px-2.5 py-[7px] text-xs font-bold text-[#b42334] hover:border-[#e7aeb6] hover:bg-[#fff0f1]"
+      onClick={handleDelete}
+    >
       Delete
     </button>
   );

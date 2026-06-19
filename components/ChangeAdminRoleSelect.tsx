@@ -1,7 +1,5 @@
 "use client";
 
-import styles from "./ChangeAdminRoleSelect.module.css";
-
 export function ChangeAdminRoleSelect({
   id,
   currentRole,
@@ -28,7 +26,7 @@ export function ChangeAdminRoleSelect({
 
   return (
     <select
-      className={styles.select}
+      className="cursor-pointer rounded-lg border border-[var(--border)] bg-[#fbfcff] py-2 pr-7 pl-2.5 text-xs font-bold text-[#34405a] outline-none focus:border-[var(--primary)] focus:shadow-[0_0_0_3px_rgba(49,87,213,0.12)]"
       defaultValue={currentRole}
       onChange={(e) => handleChange(e.target.value)}
     >

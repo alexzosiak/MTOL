@@ -1,7 +1,6 @@
 "use client";
 
 import WorldMap, { type ISOCode } from "react-svg-worldmap";
-import styles from "./CountryWorldMap.module.css";
 
 type CountryData = {
   country: string;
@@ -27,7 +26,7 @@ export function CountryWorldMap({ data }: { data: CountryData[] }) {
     .filter((item) => item.country);
 
   return (
-    <div className={styles.map}>
+    <div className="px-[18px] pt-4 pb-1 [&_svg]:block [&_svg]:max-h-[420px]">
       <WorldMap
         color="#3157d5"
         valueSuffix="visitors"

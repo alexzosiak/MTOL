@@ -2,7 +2,6 @@ import { db } from '@/lib/database';
 import { requireRole } from '@/lib/auth';
 import { EditVisitorForm } from "@/components/EditVisitorForm";
 import Link from "next/link";
-import styles from "./page.module.css";
 
 type PageProps = {
     params: Promise<{
@@ -28,10 +27,15 @@ export default async function EditVisitorPage({ params }: PageProps) {
 
     if (!visitor) {
         return (
-            <main className={styles.page}>
-                <p className={styles.eyebrow}>Visitor details</p>
-                <h1>Visitor not found</h1>
-                <Link className={styles.backLink} href="/admin">
+            <main>
+                <p className="mb-[7px] mt-0 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">
+                    Visitor details
+                </p>
+                <h1 className="m-0 tracking-[-0.04em]">Visitor not found</h1>
+                <Link
+                    className="mt-[18px] inline-block text-sm font-bold text-[var(--primary)] no-underline hover:text-[var(--primary-dark)] hover:underline"
+                    href="/admin"
+                >
                     Back to visitors
                 </Link>
             </main>
@@ -39,11 +43,16 @@ export default async function EditVisitorPage({ params }: PageProps) {
     }
 
     return (
-        <main className={styles.page}>
-            <p className={styles.eyebrow}>Visitor details</p>
-            <div className={styles.headingRow}>
-                <h1>Edit Visitor</h1>
-                <Link className={styles.backLink} href="/admin">
+        <main>
+            <p className="mb-[7px] mt-0 text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--primary)]">
+                Visitor details
+            </p>
+            <div className="flex items-center justify-between gap-[18px]">
+                <h1 className="m-0 tracking-[-0.04em]">Edit Visitor</h1>
+                <Link
+                    className="inline-block text-sm font-bold text-[var(--primary)] no-underline hover:text-[var(--primary-dark)] hover:underline"
+                    href="/admin"
+                >
                     Back to visitors
                 </Link>
             </div>
