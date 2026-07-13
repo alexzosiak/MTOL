@@ -1,33 +1,18 @@
-import { db } from '@/lib/database';
 import { requireRole } from '@/lib/auth';
 import { CreateAdminUserForm } from '@/components/CreateAdminUserForm';
 import { DeleteAdminUserButton } from '@/components/DeleteAdminUserButton';
 import { ChangeAdminRoleSelect } from '@/components/ChangeAdminRoleSelect';
+import { getAdminUsersViewModel } from '@/view-models/admin-users.view-model';
 
 const tableCellClass =
     'whitespace-nowrap border-b border-[var(--border)] px-4 py-[15px] text-sm';
 const tableHeadClass =
     'whitespace-nowrap border-b border-[var(--border)] bg-[#f9fbfe] px-4 py-[15px] text-left text-xs uppercase tracking-[0.07em] text-[var(--muted)]';
 
-const createdAtFormatter = new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-});
-
-function formatCreatedAt(value: Date | string) {
-    return createdAtFormatter.format(new Date(value));
-}
-
 export default async function AdminUsersPage() {
     await requireRole(['SUPER_ADMIN']);
 
-    const result = await db.query(`
-    SELECT id, email, role, created_at
-    FROM admin_users
-    ORDER BY created_at DESC
-  `);
-
-    const admins = result.rows;
+    const admins = await getAdminUsersViewModel();
 
     return (
         <main>
@@ -76,7 +61,7 @@ export default async function AdminUsersPage() {
                                     )}
                                 </td>
                                 <td className={tableCellClass}>
-                                    {formatCreatedAt(admin.created_at)}
+                                    {admin.createdAt}
                                 </td>
                             </tr>
                         ))}

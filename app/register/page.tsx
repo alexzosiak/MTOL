@@ -4,10 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { CountryCombobox } from '@/components/CountryCombobox';
 import { ErrorMessage } from '@/components/ErrorMessage';
+import { useVisitorFormViewModel } from '@/view-models/visitor-form.view-model';
 
 const fieldClass = 'grid gap-2 text-sm font-bold text-[#c7d6e6]';
 const inputClass =
     'w-full rounded-[11px] border border-[rgba(144,181,213,0.28)] bg-[rgba(5,16,31,0.74)] px-3.5 py-[13px] text-[#edf6ff] outline-none transition-[border-color,box-shadow,background] duration-[160ms] placeholder:text-[#6f849c] focus:border-[#7fb3e6] focus:bg-[rgba(7,24,45,0.92)] focus:shadow-[0_0_0_4px_rgba(91,142,199,0.18)]';
+const dateInputClass = `${inputClass} registration-date-input`;
 const actionsClass = 'col-span-full mt-2 flex justify-end gap-2.5';
 const primaryButtonClass =
     'cursor-pointer rounded-[10px] border-0 bg-[#9ed8ff] px-[18px] py-3 font-bold text-[#06121f] transition-[background,opacity,transform] duration-[160ms] hover:-translate-y-px hover:bg-[#c8eaff] disabled:cursor-not-allowed disabled:opacity-[0.45] disabled:hover:translate-y-0';
@@ -21,82 +23,15 @@ const reviewLabelClass =
     'm-0 text-[11px] font-bold uppercase tracking-[0.12em] text-[#88a5bf]';
 const reviewValueClass =
     'mt-1.5 mb-0 text-[15px] font-bold text-[#edf6ff]';
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-type FormData = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    company: string;
-    country: string;
-    arrivalDate: string;
-    departureDate: string;
-    accommodationNotes: string;
-};
-
-function getTodayInputValue() {
-    const today = new Date();
-    const timezoneOffset = today.getTimezoneOffset() * 60000;
-
-    return new Date(today.getTime() - timezoneOffset)
-        .toISOString()
-        .slice(0, 10);
-}
 
 export default function Home() {
     const [step, setStep] = useState(1);
     const [isSubmitted, setIsSubmitted] = useState(false);
-    const [error, setError] = useState('');
-    const todayInputValue = getTodayInputValue();
-    const [formData, setFormData] = useState<FormData>({
-        firstName: '',
-        lastName: '',
-        email: '',
-        company: '',
-        country: '',
-        arrivalDate: '',
-        departureDate: '',
-        accommodationNotes: '',
-    });
-
-    function updateField(field: keyof FormData, value: string) {
-        setFormData((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    }
-
-    function updateArrivalDate(value: string) {
-        setFormData((prev) => ({
-            ...prev,
-            arrivalDate: value,
-            departureDate:
-                prev.departureDate && prev.departureDate < value
-                    ? ''
-                    : prev.departureDate,
-        }));
-    }
-
-    function isStepOneValid() {
-        return (
-            formData.firstName &&
-            formData.lastName &&
-            emailRegex.test(formData.email.trim()) &&
-            formData.company &&
-            formData.country
-        );
-    }
-
-    function isStepTwoValid() {
-        return (
-            formData.arrivalDate >= todayInputValue &&
-            formData.departureDate >= formData.arrivalDate
-        );
-    }
+    const visitorForm = useVisitorFormViewModel();
 
     function nextStep() {
-        if (step === 1 && !isStepOneValid()) return;
-        if (step === 2 && !isStepTwoValid()) return;
+        if (step === 1 && !visitorForm.isStepOneValid()) return;
+        if (step === 2 && !visitorForm.isStepTwoValid()) return;
 
         setStep((prev) => prev + 1);
     }
@@ -106,25 +41,12 @@ export default function Home() {
     }
 
     async function submitForm() {
-        const res = await fetch('/api/visitors', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
+        const wasSubmitted = await visitorForm.submitVisitor();
+        if (wasSubmitted) setIsSubmitted(true);
+    }
 
-        if (!res.ok) {
-            const data = await res.json();
-            setError(data.error);
-            return;
-        }
-
-        const data = await res.json();
-        if (res.ok) {
-            setIsSubmitted(true);
-        }
-        console.log(data);
+    function openDatePicker(input: HTMLInputElement) {
+        input.showPicker?.();
     }
 
     if (isSubmitted) {
@@ -197,9 +119,12 @@ export default function Home() {
                             <input
                                 className={inputClass}
                                 placeholder="Enter your first name"
-                                value={formData.firstName}
+                                value={visitorForm.formData.firstName}
                                 onChange={(e) =>
-                                    updateField('firstName', e.target.value)
+                                    visitorForm.updateField(
+                                        'firstName',
+                                        e.target.value,
+                                    )
                                 }
                             />
                         </label>
@@ -209,9 +134,12 @@ export default function Home() {
                             <input
                                 className={inputClass}
                                 placeholder="Enter your last name"
-                                value={formData.lastName}
+                                value={visitorForm.formData.lastName}
                                 onChange={(e) =>
-                                    updateField('lastName', e.target.value)
+                                    visitorForm.updateField(
+                                        'lastName',
+                                        e.target.value,
+                                    )
                                 }
                             />
                         </label>
@@ -223,9 +151,12 @@ export default function Home() {
                                 type="email"
                                 className={inputClass}
                                 placeholder="Enter your email"
-                                value={formData.email}
+                                value={visitorForm.formData.email}
                                 onChange={(e) =>
-                                    updateField('email', e.target.value)
+                                    visitorForm.updateField(
+                                        'email',
+                                        e.target.value,
+                                    )
                                 }
                                 required
                             />
@@ -236,9 +167,12 @@ export default function Home() {
                             <input
                                 className={inputClass}
                                 placeholder="Enter your company"
-                                value={formData.company}
+                                value={visitorForm.formData.company}
                                 onChange={(e) =>
-                                    updateField('company', e.target.value)
+                                    visitorForm.updateField(
+                                        'company',
+                                        e.target.value,
+                                    )
                                 }
                             />
                         </label>
@@ -247,9 +181,9 @@ export default function Home() {
                             <span>Country</span>
                             <CountryCombobox
                                 className={inputClass}
-                                value={formData.country}
+                                value={visitorForm.formData.country}
                                 onChange={(value) =>
-                                    updateField('country', value)
+                                    visitorForm.updateField('country', value)
                                 }
                             />
                         </label>
@@ -257,7 +191,7 @@ export default function Home() {
                         <div className={actionsClass}>
                             <button
                                 className={primaryButtonClass}
-                                disabled={!isStepOneValid()}
+                                disabled={!visitorForm.isStepOneValid()}
                                 onClick={nextStep}
                             >
                                 Next
@@ -271,12 +205,15 @@ export default function Home() {
                         <label className={fieldClass}>
                             <span>Arrival date</span>
                             <input
-                                className={inputClass}
+                                className={dateInputClass}
                                 type="date"
-                                min={todayInputValue}
-                                value={formData.arrivalDate}
+                                min={visitorForm.todayInputValue}
+                                value={visitorForm.formData.arrivalDate}
+                                onClick={(e) => openDatePicker(e.currentTarget)}
                                 onChange={(e) =>
-                                    updateArrivalDate(e.target.value)
+                                    visitorForm.updateArrivalDate(
+                                        e.target.value,
+                                    )
                                 }
                             />
                         </label>
@@ -284,13 +221,20 @@ export default function Home() {
                         <label className={fieldClass}>
                             <span>Departure date</span>
                             <input
-                                className={inputClass}
+                                className={dateInputClass}
                                 type="date"
-                                disabled={!formData.arrivalDate}
-                                min={formData.arrivalDate || todayInputValue}
-                                value={formData.departureDate}
+                                disabled={!visitorForm.formData.arrivalDate}
+                                min={
+                                    visitorForm.formData.arrivalDate ||
+                                    visitorForm.todayInputValue
+                                }
+                                value={visitorForm.formData.departureDate}
+                                onClick={(e) => openDatePicker(e.currentTarget)}
                                 onChange={(e) =>
-                                    updateField('departureDate', e.target.value)
+                                    visitorForm.updateField(
+                                        'departureDate',
+                                        e.target.value,
+                                    )
                                 }
                             />
                         </label>
@@ -300,9 +244,9 @@ export default function Home() {
                             <textarea
                                 className={`${inputClass} min-h-28 resize-y`}
                                 placeholder="Add any useful notes"
-                                value={formData.accommodationNotes}
+                                value={visitorForm.formData.accommodationNotes}
                                 onChange={(e) =>
-                                    updateField(
+                                    visitorForm.updateField(
                                         'accommodationNotes',
                                         e.target.value,
                                     )
@@ -320,7 +264,7 @@ export default function Home() {
 
                             <button
                                 className={primaryButtonClass}
-                                disabled={!isStepTwoValid()}
+                                disabled={!visitorForm.isStepTwoValid()}
                                 onClick={nextStep}
                             >
                                 Next
@@ -352,8 +296,8 @@ export default function Home() {
                                             Full name
                                         </p>
                                         <p className={reviewValueClass}>
-                                            {formData.firstName}{' '}
-                                            {formData.lastName}
+                                            {visitorForm.formData.firstName}{' '}
+                                            {visitorForm.formData.lastName}
                                         </p>
                                     </div>
                                     <div className={reviewItemClass}>
@@ -361,7 +305,7 @@ export default function Home() {
                                             Company
                                         </p>
                                         <p className={reviewValueClass}>
-                                            {formData.company}
+                                            {visitorForm.formData.company}
                                         </p>
                                     </div>
                                     <div className={reviewItemClass}>
@@ -369,7 +313,7 @@ export default function Home() {
                                             Email
                                         </p>
                                         <p className={reviewValueClass}>
-                                            {formData.email}
+                                            {visitorForm.formData.email}
                                         </p>
                                     </div>
                                     <div className={reviewItemClass}>
@@ -377,7 +321,7 @@ export default function Home() {
                                             Country
                                         </p>
                                         <p className={reviewValueClass}>
-                                            {formData.country}
+                                            {visitorForm.formData.country}
                                         </p>
                                     </div>
                                 </div>
@@ -393,7 +337,7 @@ export default function Home() {
                                             Arrival
                                         </p>
                                         <p className={reviewValueClass}>
-                                            {formData.arrivalDate}
+                                            {visitorForm.formData.arrivalDate}
                                         </p>
                                     </div>
                                     <div className={reviewItemClass}>
@@ -401,7 +345,7 @@ export default function Home() {
                                             Departure
                                         </p>
                                         <p className={reviewValueClass}>
-                                            {formData.departureDate}
+                                            {visitorForm.formData.departureDate}
                                         </p>
                                     </div>
                                 </div>
@@ -412,7 +356,7 @@ export default function Home() {
                                     Accommodation notes
                                 </h3>
                                 <p className="mt-3 mb-0 min-h-10 rounded-[11px] bg-[rgba(5,16,31,0.62)] p-4 text-sm leading-[1.7] text-[#d7e5f2]">
-                                    {formData.accommodationNotes ||
+                                    {visitorForm.formData.accommodationNotes ||
                                         'No notes added.'}
                                 </p>
                             </section>
@@ -425,7 +369,7 @@ export default function Home() {
                             >
                                 Back
                             </button>
-                            <ErrorMessage message={error} />
+                            <ErrorMessage message={visitorForm.error} />
                             <button
                                 className={primaryButtonClass}
                                 onClick={submitForm}

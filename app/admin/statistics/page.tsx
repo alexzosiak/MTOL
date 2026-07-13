@@ -1,6 +1,6 @@
-import { db } from "@/lib/database";
 import { requireRole } from "@/lib/auth";
 import { CountryWorldMap } from "@/components/CountryWorldMap";
+import { getStatisticsViewModel } from "@/view-models/statistics.view-model";
 
 const tableCellClass =
   "border-t border-[var(--border)] px-[18px] py-3.5 text-sm";
@@ -10,23 +10,7 @@ const tableHeadClass =
 export default async function StatisticsPage() {
   await requireRole(["SUPER_ADMIN", "ADMIN", "VIEWER"]);
 
-  const totalResult = await db.query(`
-    SELECT COUNT(*)::int AS total
-    FROM visitors
-  `);
-
-  const todayResult = await db.query(`
-    SELECT COUNT(*)::int AS today
-    FROM visitors
-    WHERE created_at >= NOW() - INTERVAL '1 day'
-  `);
-
-  const countryResult = await db.query(`
-    SELECT country, COUNT(*)::int AS count
-    FROM visitors
-    GROUP BY country
-    ORDER BY count DESC
-  `);
+  const statistics = await getStatisticsViewModel();
 
   return (
     <main>
@@ -39,7 +23,7 @@ export default async function StatisticsPage() {
         <section className="rounded-[13px] border border-[var(--border)] bg-[var(--surface)] p-5">
           <h2 className="m-0 text-sm text-[var(--muted)]">Total visitors</h2>
           <p className="mt-3 mb-0 text-4xl font-bold tracking-[-0.06em] text-[var(--primary)]">
-            {totalResult.rows[0].total}
+            {statistics.totalVisitors}
           </p>
         </section>
 
@@ -48,7 +32,7 @@ export default async function StatisticsPage() {
             Visitors last 24h
           </h2>
           <p className="mt-3 mb-0 text-4xl font-bold tracking-[-0.06em] text-[var(--primary)]">
-            {todayResult.rows[0].today}
+            {statistics.visitorsLastDay}
           </p>
         </section>
       </div>
@@ -57,7 +41,7 @@ export default async function StatisticsPage() {
         <h2 className="m-0 px-[18px] pt-[18px] text-sm text-[var(--muted)]">
           Visitors by country
         </h2>
-        <CountryWorldMap data={countryResult.rows} />
+        <CountryWorldMap data={statistics.visitorsByCountry} />
         <div className="mt-3 overflow-x-auto">
           <table className="w-full border-collapse text-left">
             <thead>
@@ -68,7 +52,7 @@ export default async function StatisticsPage() {
             </thead>
 
             <tbody>
-              {countryResult.rows.map((row) => (
+              {statistics.visitorsByCountry.map((row) => (
                 <tr key={row.country}>
                   <td className={tableCellClass}>{row.country}</td>
                   <td className={tableCellClass}>{row.count}</td>

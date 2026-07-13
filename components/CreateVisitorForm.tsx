@@ -4,119 +4,30 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { CountryCombobox } from './CountryCombobox';
 import { ErrorMessage } from './ErrorMessage';
+import { useVisitorFormViewModel } from '@/view-models/visitor-form.view-model';
 
 const fieldClass = 'grid gap-[7px] text-[13px] font-bold text-[#34405a]';
 const controlClass =
     'h-[42px] min-w-0 rounded-[9px] border border-[var(--border)] bg-[#fbfcff] px-3 text-[var(--foreground)] outline-none focus:border-[var(--primary)] focus:shadow-[0_0_0_4px_rgba(49,87,213,0.12)]';
 const textAreaClass = `${controlClass} h-auto min-h-24 py-3`;
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-type FormData = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    company: string;
-    country: string;
-    arrivalDate: string;
-    departureDate: string;
-    accommodationNotes: string;
-};
-
-const initialFormData: FormData = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    company: '',
-    country: '',
-    arrivalDate: '',
-    departureDate: '',
-    accommodationNotes: '',
-};
-
-function getTodayInputValue() {
-    const today = new Date();
-    const timezoneOffset = today.getTimezoneOffset() * 60000;
-
-    return new Date(today.getTime() - timezoneOffset)
-        .toISOString()
-        .slice(0, 10);
-}
 
 export function CreateVisitorForm() {
     const router = useRouter();
-    const todayInputValue = getTodayInputValue();
-    const [formData, setFormData] = useState<FormData>(initialFormData);
-    const [error, setError] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [countryInputKey, setCountryInputKey] = useState(0);
-
-    function updateField(field: keyof FormData, value: string) {
-        setFormData((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
-    }
-
-    function updateArrivalDate(value: string) {
-        setFormData((prev) => ({
-            ...prev,
-            arrivalDate: value,
-            departureDate:
-                prev.departureDate && prev.departureDate < value
-                    ? ''
-                    : prev.departureDate,
-        }));
-    }
-
-    function isFormValid() {
-        return (
-            formData.firstName.trim().length >= 2 &&
-            formData.lastName.trim().length >= 2 &&
-            emailRegex.test(formData.email.trim()) &&
-            formData.company.trim().length >= 2 &&
-            formData.country.trim().length >= 2 &&
-            formData.arrivalDate >= todayInputValue &&
-            formData.departureDate >= formData.arrivalDate
-        );
-    }
-
-    function resetForm() {
-        setFormData(initialFormData);
-        setCountryInputKey((prev) => prev + 1);
-        setError('');
-    }
+    const visitorForm = useVisitorFormViewModel();
 
     function closeForm() {
-        if (isSubmitting) return;
+        if (visitorForm.isSubmitting) return;
 
-        resetForm();
+        visitorForm.resetForm();
         setIsOpen(false);
     }
 
     async function handleSubmit() {
-        if (!isFormValid() || isSubmitting) return;
+        const wasCreated = await visitorForm.submitVisitor();
+        if (!wasCreated) return;
 
-        setError('');
-        setIsSubmitting(true);
-
-        const res = await fetch('/api/visitors', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
-
-        const data = await res.json();
-        setIsSubmitting(false);
-
-        if (!res.ok) {
-            setError(data.error || 'Something went wrong');
-            return;
-        }
-
-        resetForm();
+        visitorForm.resetForm();
         setIsOpen(false);
         router.refresh();
     }
@@ -159,16 +70,18 @@ export function CreateVisitorForm() {
                             </button>
                         </div>
 
-                        {error && <ErrorMessage message={error} />}
+                        {visitorForm.error && (
+                            <ErrorMessage message={visitorForm.error} />
+                        )}
 
                         <div className="mt-[18px] grid grid-cols-2 gap-3 max-[700px]:grid-cols-1">
                             <label className={fieldClass}>
                                 <span>First name</span>
                                 <input
                                     className={controlClass}
-                                    value={formData.firstName}
+                                    value={visitorForm.formData.firstName}
                                     onChange={(e) =>
-                                        updateField(
+                                        visitorForm.updateField(
                                             'firstName',
                                             e.target.value,
                                         )
@@ -181,9 +94,12 @@ export function CreateVisitorForm() {
                                 <span>Last name</span>
                                 <input
                                     className={controlClass}
-                                    value={formData.lastName}
+                                    value={visitorForm.formData.lastName}
                                     onChange={(e) =>
-                                        updateField('lastName', e.target.value)
+                                        visitorForm.updateField(
+                                            'lastName',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="Last name"
                                 />
@@ -194,9 +110,12 @@ export function CreateVisitorForm() {
                                 <input
                                     className={controlClass}
                                     type="email"
-                                    value={formData.email}
+                                    value={visitorForm.formData.email}
                                     onChange={(e) =>
-                                        updateField('email', e.target.value)
+                                        visitorForm.updateField(
+                                            'email',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="visitor@example.com"
                                 />
@@ -206,9 +125,12 @@ export function CreateVisitorForm() {
                                 <span>Company</span>
                                 <input
                                     className={controlClass}
-                                    value={formData.company}
+                                    value={visitorForm.formData.company}
                                     onChange={(e) =>
-                                        updateField('company', e.target.value)
+                                        visitorForm.updateField(
+                                            'company',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="Company"
                                 />
@@ -217,11 +139,14 @@ export function CreateVisitorForm() {
                             <label className={fieldClass}>
                                 <span>Country</span>
                                 <CountryCombobox
-                                    key={countryInputKey}
+                                    key={visitorForm.countryInputKey}
                                     className={controlClass}
-                                    value={formData.country}
+                                    value={visitorForm.formData.country}
                                     onChange={(value) =>
-                                        updateField('country', value)
+                                        visitorForm.updateField(
+                                            'country',
+                                            value,
+                                        )
                                     }
                                 />
                             </label>
@@ -231,10 +156,12 @@ export function CreateVisitorForm() {
                                 <input
                                     className={controlClass}
                                     type="date"
-                                    min={todayInputValue}
-                                    value={formData.arrivalDate}
+                                    min={visitorForm.todayInputValue}
+                                    value={visitorForm.formData.arrivalDate}
                                     onChange={(e) =>
-                                        updateArrivalDate(e.target.value)
+                                        visitorForm.updateArrivalDate(
+                                            e.target.value,
+                                        )
                                     }
                                 />
                             </label>
@@ -244,13 +171,16 @@ export function CreateVisitorForm() {
                                 <input
                                     className={controlClass}
                                     type="date"
-                                    disabled={!formData.arrivalDate}
-                                    min={
-                                        formData.arrivalDate || todayInputValue
+                                    disabled={
+                                        !visitorForm.formData.arrivalDate
                                     }
-                                    value={formData.departureDate}
+                                    min={
+                                        visitorForm.formData.arrivalDate ||
+                                        visitorForm.todayInputValue
+                                    }
+                                    value={visitorForm.formData.departureDate}
                                     onChange={(e) =>
-                                        updateField(
+                                        visitorForm.updateField(
                                             'departureDate',
                                             e.target.value,
                                         )
@@ -262,9 +192,11 @@ export function CreateVisitorForm() {
                                 <span>Accommodation notes</span>
                                 <textarea
                                     className={textAreaClass}
-                                    value={formData.accommodationNotes}
+                                    value={
+                                        visitorForm.formData.accommodationNotes
+                                    }
                                     onChange={(e) =>
-                                        updateField(
+                                        visitorForm.updateField(
                                             'accommodationNotes',
                                             e.target.value,
                                         )
@@ -284,11 +216,14 @@ export function CreateVisitorForm() {
 
                                 <button
                                     className="h-[42px] cursor-pointer rounded-[9px] border-0 bg-[var(--primary)] px-[17px] font-bold text-white hover:bg-[var(--primary-dark)] disabled:cursor-not-allowed disabled:opacity-50"
-                                    disabled={!isFormValid() || isSubmitting}
+                                    disabled={
+                                        !visitorForm.isFormValid() ||
+                                        visitorForm.isSubmitting
+                                    }
                                     onClick={handleSubmit}
                                     type="button"
                                 >
-                                    {isSubmitting
+                                    {visitorForm.isSubmitting
                                         ? 'Creating...'
                                         : 'Create visitor'}
                                 </button>

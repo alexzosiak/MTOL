@@ -1,21 +1,12 @@
-import { db } from '@/lib/database';
 import { requireRole } from '@/lib/auth';
 import { CreateVisitorForm } from '@/components/CreateVisitorForm';
 import { DeleteVisitorButton } from '@/components/DeleteVisitorButton';
+import { getAdminVisitorsViewModel } from '@/view-models/admin-visitors.view-model';
 
 const tableCellClass =
     'whitespace-nowrap border-b border-[var(--border)] px-4 py-[15px] text-sm';
 const tableHeadClass =
     'whitespace-nowrap border-b border-[var(--border)] bg-[#f9fbfe] px-4 py-[15px] text-left text-xs uppercase tracking-[0.07em] text-[var(--muted)]';
-
-const submittedAtFormatter = new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-});
-
-function formatSubmittedAt(value: Date | string) {
-    return submittedAtFormatter.format(new Date(value));
-}
 
 type AdminPageProps = {
     searchParams: Promise<{
@@ -29,24 +20,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
     const params = await searchParams;
     const search = params.search || '';
 
-    const result = await db.query(
-        `
-    SELECT
-      id,
-      first_name,
-      last_name,
-      email,
-      company,
-      country,
-      created_at
-    FROM visitors
-    WHERE CONCAT(first_name, ' ', last_name) ILIKE $1
-    ORDER BY created_at DESC
-    `,
-        [`%${search}%`],
-    );
-
-    const visitors = result.rows;
+    const visitors = await getAdminVisitorsViewModel(search);
 
     return (
         <main>
@@ -113,7 +87,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                     {visitor.company}
                                 </td>
                                 <td className={tableCellClass}>
-                                    {formatSubmittedAt(visitor.created_at)}
+                                    {visitor.submittedAt}
                                 </td>
 
                                 {admin.role !== 'VIEWER' && (

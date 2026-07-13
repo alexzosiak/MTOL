@@ -65,6 +65,57 @@ export const visitorRepository = {
         return result.rows;
     },
 
+    async searchByFullName(search: string) {
+        const result = await db.query(
+            `
+      SELECT
+        id,
+        first_name,
+        last_name,
+        email,
+        company,
+        country,
+        created_at
+      FROM visitors
+      WHERE CONCAT(first_name, ' ', last_name) ILIKE $1
+      ORDER BY created_at DESC
+      `,
+            [`%${search}%`],
+        );
+
+        return result.rows;
+    },
+
+    async countAll() {
+        const result = await db.query(`
+      SELECT COUNT(*)::int AS total
+      FROM visitors
+      `);
+
+        return result.rows[0].total;
+    },
+
+    async countCreatedInLastDay() {
+        const result = await db.query(`
+      SELECT COUNT(*)::int AS today
+      FROM visitors
+      WHERE created_at >= NOW() - INTERVAL '1 day'
+      `);
+
+        return result.rows[0].today;
+    },
+
+    async countByCountry() {
+        const result = await db.query(`
+      SELECT country, COUNT(*)::int AS count
+      FROM visitors
+      GROUP BY country
+      ORDER BY count DESC
+      `);
+
+        return result.rows;
+    },
+
     async findByEmail(email: string) {
         const result = await db.query(
             `

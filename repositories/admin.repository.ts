@@ -1,6 +1,16 @@
 import { db } from '@/lib/database';
 
 export const adminRepository = {
+  async findAll() {
+    const result = await db.query(`
+      SELECT id, email, role, created_at
+      FROM admin_users
+      ORDER BY created_at DESC
+    `);
+
+    return result.rows;
+  },
+
   async findByEmail(email: string) {
     const result = await db.query(
       `
