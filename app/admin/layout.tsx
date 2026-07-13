@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { getAdminSession } from "@/lib/auth";
+import { AdminNav } from "@/components/AdminNav";
 
 export default async function AdminLayout({
   children,
@@ -21,29 +21,7 @@ export default async function AdminLayout({
           {admin.email}
         </p>
 
-        <nav className="mt-9 grid gap-[7px] max-[760px]:mt-5 max-[760px]:grid-cols-3">
-          <Link
-            className="rounded-[9px] px-3 py-[11px] text-sm font-bold text-[#dfe6ff] no-underline transition-colors duration-[160ms] hover:bg-[rgba(255,255,255,0.1)] hover:text-white max-[760px]:px-2 max-[760px]:py-2.5 max-[760px]:text-center"
-            href="/admin"
-          >
-            Visitors
-          </Link>
-          <Link
-            className="rounded-[9px] px-3 py-[11px] text-sm font-bold text-[#dfe6ff] no-underline transition-colors duration-[160ms] hover:bg-[rgba(255,255,255,0.1)] hover:text-white max-[760px]:px-2 max-[760px]:py-2.5 max-[760px]:text-center"
-            href="/admin/statistics"
-          >
-            Statistics
-          </Link>
-
-          {admin.role === "SUPER_ADMIN" && (
-            <Link
-              className="rounded-[9px] px-3 py-[11px] text-sm font-bold text-[#dfe6ff] no-underline transition-colors duration-[160ms] hover:bg-[rgba(255,255,255,0.1)] hover:text-white max-[760px]:px-2 max-[760px]:py-2.5 max-[760px]:text-center"
-              href="/admin/users"
-            >
-              Admin Users
-            </Link>
-          )}
-        </nav>
+        <AdminNav role={admin.role} />
 
         <form
           className="mt-auto max-[760px]:mt-[18px]"

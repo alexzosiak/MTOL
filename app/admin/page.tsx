@@ -47,13 +47,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         Directory
                     </p>
                     <h1 className="m-0 tracking-[-0.04em]">Admin Visitors</h1>
-                </div>
-                <Link
-                    className="rounded-[9px] bg-[var(--primary)] px-3.5 py-[11px] text-sm font-bold text-white no-underline hover:bg-[var(--primary-dark)]"
-                    href="/admin/statistics"
-                >
-                    View statistics
-                </Link>
+                </div>    
             </div>
 
             <form className="my-7 mb-5 flex max-w-[560px] gap-[9px]">
