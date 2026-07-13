@@ -1,5 +1,15 @@
 import { visitorService } from '@/services/visitor.service';
 
+const validationErrors = new Set([
+    'Required fields are missing',
+    'Email is required',
+    'Invalid email address',
+    'Arrival and departure dates are required',
+    'Invalid travel date format',
+    'Arrival date cannot be in the past',
+    'Departure date cannot be before arrival date',
+]);
+
 export async function POST(request: Request) {
     try {
         const body = await request.json();
@@ -8,10 +18,7 @@ export async function POST(request: Request) {
 
         return Response.json(visitor);
     } catch (error) {
-        if (
-            error instanceof Error &&
-            error.message === 'Required fields are missing'
-        ) {
+        if (error instanceof Error && validationErrors.has(error.message)) {
             return Response.json({ error: error.message }, { status: 400 });
         } else if (
             error instanceof Error &&

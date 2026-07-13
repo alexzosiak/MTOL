@@ -32,6 +32,20 @@ function validateTextField(value: string, fieldName: string) {
     return trimmedValue;
 }
 
+function validateEmail(value?: string) {
+    const email = value?.trim().toLowerCase();
+
+    if (!email) {
+        throw new Error('Email is required');
+    }
+
+    if (!emailRegex.test(email)) {
+        throw new Error('Invalid email address');
+    }
+
+    return email;
+}
+
 function getTodayInputValue() {
     const today = new Date();
     const timezoneOffset = today.getTimezoneOffset() * 60000;
@@ -70,20 +84,12 @@ export const visitorService = {
         const lastName = validateTextField(data.lastName, 'Last name');
         const company = validateTextField(data.company, 'Company');
         const country = validateTextField(data.country, 'Country');
-        const email = data.email.trim().toLowerCase();
+        const email = validateEmail(data.email);
 
         const existingVisitor = await visitorRepository.findByEmail(email);
 
         if (existingVisitor) {
             throw new Error('A registration with this email already exists');
-        }
-
-        if (!email) {
-            throw new Error('Email is required');
-        }
-
-        if (!emailRegex.test(email)) {
-            throw new Error('Invalid email address');
         }
 
         validateTravelDates(data.arrivalDate, data.departureDate);

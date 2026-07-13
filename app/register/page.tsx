@@ -21,6 +21,7 @@ const reviewLabelClass =
     'm-0 text-[11px] font-bold uppercase tracking-[0.12em] text-[#88a5bf]';
 const reviewValueClass =
     'mt-1.5 mb-0 text-[15px] font-bold text-[#edf6ff]';
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type FormData = {
     firstName: string;
@@ -80,6 +81,7 @@ export default function Home() {
         return (
             formData.firstName &&
             formData.lastName &&
+            emailRegex.test(formData.email.trim()) &&
             formData.company &&
             formData.country
         );
