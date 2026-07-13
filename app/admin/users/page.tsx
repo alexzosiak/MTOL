@@ -9,6 +9,15 @@ const tableCellClass =
 const tableHeadClass =
     'whitespace-nowrap border-b border-[var(--border)] bg-[#f9fbfe] px-4 py-[15px] text-left text-xs uppercase tracking-[0.07em] text-[var(--muted)]';
 
+const createdAtFormatter = new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+});
+
+function formatCreatedAt(value: Date | string) {
+    return createdAtFormatter.format(new Date(value));
+}
+
 export default async function AdminUsersPage() {
     await requireRole(['SUPER_ADMIN']);
 
@@ -67,7 +76,7 @@ export default async function AdminUsersPage() {
                                     )}
                                 </td>
                                 <td className={tableCellClass}>
-                                    {String(admin.created_at)}
+                                    {formatCreatedAt(admin.created_at)}
                                 </td>
                             </tr>
                         ))}

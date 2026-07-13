@@ -1,5 +1,6 @@
 import { db } from '@/lib/database';
 import { requireRole } from '@/lib/auth';
+import { CreateVisitorForm } from '@/components/CreateVisitorForm';
 import { DeleteVisitorButton } from '@/components/DeleteVisitorButton';
 
 const tableCellClass =
@@ -57,6 +58,8 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <h1 className="m-0 tracking-[-0.04em]">Admin Visitors</h1>
                 </div>    
             </div>
+
+            {admin.role !== 'VIEWER' && <CreateVisitorForm />}
 
             <form className="my-7 mb-5 flex max-w-[560px] gap-[9px]">
                 
