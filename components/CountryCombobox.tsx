@@ -50,7 +50,7 @@ export function CountryCombobox({ value, onChange, className }: Props) {
             />
 
             {open && search && filteredCountries.length > 0 && (
-                <div className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-md border bg-white shadow">
+                <div className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-[rgba(144,181,213,0.28)] bg-[#07182d] text-[#edf6ff] shadow-[0_18px_44px_rgba(0,0,0,0.38)]">
                     {filteredCountries.map((country) => (
                         <button
                             key={country}
@@ -59,7 +59,7 @@ export function CountryCombobox({ value, onChange, className }: Props) {
                                 e.preventDefault();
                                 selectCountry(country);
                             }}
-                            className="block w-full px-3 py-2 text-left hover:bg-gray-100"
+                            className="block w-full px-3 py-2 text-left text-[#edf6ff] hover:bg-[rgba(158,216,255,0.12)]"
                         >
                             {country}
                         </button>

@@ -37,3 +37,23 @@ button,
 a {
   -webkit-tap-highlight-color: transparent;
 }
+
+.register-camo-bg {
+  background:
+    linear-gradient(rgba(151, 199, 187, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(151, 199, 187, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at center, transparent 0 34%, rgba(1, 5, 12, 0.42) 78%),
+    linear-gradient(90deg, rgba(1, 5, 12, 0.52), transparent 36%, rgba(1, 5, 12, 0.42)),
+    url("data:image/svg+xml,%3Csvg width='560' height='560' viewBox='0 0 560 560' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='560' height='560' fill='%23061325'/%3E%3Cpath d='M-38 33 31 7 91 30 129 82 102 137 37 158-23 131-57 77Z' fill='%23134168'/%3E%3Cpath d='M185-34 272-12 312 45 286 104 204 122 145 84 134 22Z' fill='%23091f3a'/%3E%3Cpath d='M374-18 456 0 540 55 525 127 441 155 367 124 331 58Z' fill='%23285a82'/%3E%3Cpath d='M37 190 115 161 191 185 224 241 184 308 98 319 32 281-4 229Z' fill='%230b2b4a'/%3E%3Cpath d='M266 147 357 166 397 223 365 289 281 307 213 265 210 197Z' fill='%231a4a73'/%3E%3Cpath d='M446 184 523 154 594 188 616 254 567 315 478 307 424 255Z' fill='%2307182d'/%3E%3Cpath d='M-43 345 29 304 105 329 139 393 95 454 11 465-48 412Z' fill='%23204f77'/%3E%3Cpath d='M159 375 232 330 318 352 351 421 305 493 208 503 145 451Z' fill='%23081c34'/%3E%3Cpath d='M385 344 470 319 545 353 573 421 522 487 428 498 368 445Z' fill='%23113a61'/%3E%3Cpath d='M24 510 96 479 171 510 188 576 104 612 21 586Z' fill='%230d3154'/%3E%3Cpath d='M280 522 354 480 429 505 456 566 385 614 304 596Z' fill='%2326577f'/%3E%3Cpath d='M111 61 176 39 228 70 238 126 174 159 117 132Z' fill='%232f6c99' opacity='.72'/%3E%3Cpath d='M318 82 377 52 438 83 435 146 367 176 311 138Z' fill='%23051930' opacity='.86'/%3E%3Cpath d='M77 257 143 231 199 268 190 329 124 357 67 321Z' fill='%23275d88' opacity='.7'/%3E%3Cpath d='M351 257 414 232 482 266 473 336 398 360 343 321Z' fill='%23051a31' opacity='.9'/%3E%3Cpath d='M113 430 180 407 239 441 230 503 158 528 102 492Z' fill='%2319476f' opacity='.82'/%3E%3Cpath d='M482 35 548 17 604 52 596 112 526 137 472 100Z' fill='%230b2848' opacity='.92'/%3E%3C/svg%3E"),
+    linear-gradient(135deg, rgba(3, 10, 19, 0.94), rgba(5, 17, 32, 0.98) 46%, rgba(1, 7, 15, 1));
+  background-size: 64px 64px, 64px 64px, auto, auto, 560px 560px, auto;
+  background-color: #04101f;
+}
+
+.register-camo-bg::before {
+  content: none;
+}
+
+.register-camo-bg::after {
+  content: none;
+}
