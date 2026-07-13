@@ -12,6 +12,7 @@ type CreateVisitorInput = {
 };
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const dateInputRegex = /^\d{4}-\d{2}-\d{2}$/;
 
 function validateTextField(value: string, fieldName: string) {
     const trimmedValue = value?.trim();
@@ -29,6 +30,38 @@ function validateTextField(value: string, fieldName: string) {
     }
 
     return trimmedValue;
+}
+
+function getTodayInputValue() {
+    const today = new Date();
+    const timezoneOffset = today.getTimezoneOffset() * 60000;
+
+    return new Date(today.getTime() - timezoneOffset)
+        .toISOString()
+        .slice(0, 10);
+}
+
+function validateTravelDates(arrivalDate: string, departureDate: string) {
+    if (!arrivalDate || !departureDate) {
+        throw new Error('Arrival and departure dates are required');
+    }
+
+    if (
+        !dateInputRegex.test(arrivalDate) ||
+        !dateInputRegex.test(departureDate)
+    ) {
+        throw new Error('Invalid travel date format');
+    }
+
+    const today = getTodayInputValue();
+
+    if (arrivalDate < today) {
+        throw new Error('Arrival date cannot be in the past');
+    }
+
+    if (departureDate < arrivalDate) {
+        throw new Error('Departure date cannot be before arrival date');
+    }
 }
 
 export const visitorService = {
@@ -53,9 +86,7 @@ export const visitorService = {
             throw new Error('Invalid email address');
         }
 
-        if (!data.arrivalDate || !data.departureDate) {
-            throw new Error('Arrival and departure dates are required');
-        }
+        validateTravelDates(data.arrivalDate, data.departureDate);
 
         
         if (

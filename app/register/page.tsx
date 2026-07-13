@@ -33,10 +33,20 @@ type FormData = {
     accommodationNotes: string;
 };
 
+function getTodayInputValue() {
+    const today = new Date();
+    const timezoneOffset = today.getTimezoneOffset() * 60000;
+
+    return new Date(today.getTime() - timezoneOffset)
+        .toISOString()
+        .slice(0, 10);
+}
+
 export default function Home() {
     const [step, setStep] = useState(1);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [error, setError] = useState('');
+    const todayInputValue = getTodayInputValue();
     const [formData, setFormData] = useState<FormData>({
         firstName: '',
         lastName: '',
@@ -55,6 +65,17 @@ export default function Home() {
         }));
     }
 
+    function updateArrivalDate(value: string) {
+        setFormData((prev) => ({
+            ...prev,
+            arrivalDate: value,
+            departureDate:
+                prev.departureDate && prev.departureDate < value
+                    ? ''
+                    : prev.departureDate,
+        }));
+    }
+
     function isStepOneValid() {
         return (
             formData.firstName &&
@@ -65,7 +86,10 @@ export default function Home() {
     }
 
     function isStepTwoValid() {
-        return formData.arrivalDate && formData.departureDate;
+        return (
+            formData.arrivalDate >= todayInputValue &&
+            formData.departureDate >= formData.arrivalDate
+        );
     }
 
     function nextStep() {
@@ -103,8 +127,9 @@ export default function Home() {
 
     if (isSubmitted) {
         return (
-            <main className="relative grid min-h-screen place-items-center overflow-hidden bg-[radial-gradient(circle_at_78%_28%,rgba(114,181,163,0.12),transparent_28%),#071013] p-7 text-[#e7edf2]">
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(151,199,187,0.14)_1px,transparent_1px),linear-gradient(90deg,rgba(151,199,187,0.14)_1px,transparent_1px)] bg-[length:64px_64px] opacity-[0.36] [mask-image:radial-gradient(circle_at_center,black,transparent_76%)]" />
+            <main className="register-camo-bg relative isolate grid min-h-screen place-items-center overflow-hidden p-7 text-[#e7edf2]">
+                <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(rgba(151,199,187,0.13)_1px,transparent_1px),linear-gradient(90deg,rgba(151,199,187,0.13)_1px,transparent_1px)] bg-[length:64px_64px] opacity-[0.18] [mask-image:radial-gradient(circle_at_center,black,transparent_78%)]" />
+                <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-48 bg-[linear-gradient(180deg,rgba(126,179,230,0.17),transparent)]" />
                 <section className="relative w-[min(100%,660px)] border border-[rgba(183,211,204,0.3)] bg-[rgba(8,21,23,0.92)] p-[clamp(28px,6vw,58px)] shadow-[0_22px_70px_rgba(0,0,0,0.28)] before:absolute before:left-[-1px] before:top-[-1px] before:h-[18px] before:w-[18px] before:border-l-2 before:border-t-2 before:border-[#b0e2d2] before:content-[''] after:absolute after:bottom-[-1px] after:right-[-1px] after:h-[18px] after:w-[18px] after:border-b-2 after:border-r-2 after:border-[#b0e2d2] after:content-['']">
                     <p className="m-0 flex items-center gap-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#a8d6c8] [font-family:var(--font-geist-mono),monospace]">
                         <span className="h-[7px] w-[7px] rounded-full bg-[#8de1ba] shadow-[0_0_16px_#8de1ba]" />
@@ -246,9 +271,10 @@ export default function Home() {
                             <input
                                 className={inputClass}
                                 type="date"
+                                min={todayInputValue}
                                 value={formData.arrivalDate}
                                 onChange={(e) =>
-                                    updateField('arrivalDate', e.target.value)
+                                    updateArrivalDate(e.target.value)
                                 }
                             />
                         </label>
@@ -258,6 +284,8 @@ export default function Home() {
                             <input
                                 className={inputClass}
                                 type="date"
+                                disabled={!formData.arrivalDate}
+                                min={formData.arrivalDate || todayInputValue}
                                 value={formData.departureDate}
                                 onChange={(e) =>
                                     updateField('departureDate', e.target.value)
