@@ -1,12 +1,20 @@
 import { db } from '@/lib/database';
 import { requireRole } from '@/lib/auth';
 import { DeleteVisitorButton } from '@/components/DeleteVisitorButton';
-import Link from 'next/link';
 
 const tableCellClass =
     'whitespace-nowrap border-b border-[var(--border)] px-4 py-[15px] text-sm';
 const tableHeadClass =
     'whitespace-nowrap border-b border-[var(--border)] bg-[#f9fbfe] px-4 py-[15px] text-left text-xs uppercase tracking-[0.07em] text-[var(--muted)]';
+
+const submittedAtFormatter = new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+});
+
+function formatSubmittedAt(value: Date | string) {
+    return submittedAtFormatter.format(new Date(value));
+}
 
 type AdminPageProps = {
     searchParams: Promise<{
@@ -102,7 +110,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                     {visitor.company}
                                 </td>
                                 <td className={tableCellClass}>
-                                    {String(visitor.created_at)}
+                                    {formatSubmittedAt(visitor.created_at)}
                                 </td>
 
                                 {admin.role !== 'VIEWER' && (
